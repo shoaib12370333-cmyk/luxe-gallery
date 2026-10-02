@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Luxe Gallery Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Sora:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+
+  <div class="admin-topbar">
+    <p class="wordmark">Luxe Gallery — Admin</p>
+    <div class="admin-topbar-actions">
+      <a href="/" target="_blank">View site</a>
+      <button id="logoutBtn">Log out</button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- SITE IMAGES -->
+    <section class="admin-section">
+      <h2>Site images</h2>
+      <div class="admin-card">
+        <form id="siteImagesForm" class="item-form" enctype="multipart/form-data">
+          <label class="full">Hero background image <span style="font-weight:400;">(the large image at the very top of the site)</span>
+            <input type="file" id="heroImageInput" accept=".jpg,.jpeg,.png,.webp">
+          </label>
+          <div class="full" id="heroImagePreviewWrap" style="display:none;">
+            <img id="heroImagePreview" class="site-image-preview" alt="Current hero image">
+          </div>
+          <label class="full">About section image
+            <input type="file" id="aboutImageInput" accept=".jpg,.jpeg,.png,.webp">
+          </label>
+          <div class="full" id="aboutImagePreviewWrap" style="display:none;">
+            <img id="aboutImagePreview" class="site-image-preview" alt="Current about image">
+          </div>
+          <button type="submit">Save site images</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- GALLERY MANAGEMENT -->
+    <section class="admin-section">
+      <h2>Gallery pieces</h2>
+      <div class="admin-card">
+        <form id="galleryForm" class="item-form" enctype="multipart/form-data">
+          <input type="hidden" id="editId" value="">
+          <label>Title
+            <input type="text" id="itemTitle" required>
+          </label>
+          <label>Category
+            <input type="text" id="itemCategory" placeholder="e.g. Wall Panels">
+          </label>
+          <label>Price
+            <input type="text" id="itemPrice" placeholder="e.g. 45000">
+          </label>
+          <label>Dimensions <span style="font-weight:400;">(comma-separated, leave empty to hide)</span>
+            <input type="text" id="itemDimensions" placeholder="e.g. 24x36 in, 30x40 in">
+          </label>
+          <label class="full">Description
+            <textarea id="itemDescription"></textarea>
+          </label>
+          <label class="full">Image <span id="imageHint" style="font-weight:400;">(JPG, PNG, or WEBP — required for new pieces)</span>
+            <input type="file" id="itemImage" accept=".jpg,.jpeg,.png,.webp">
+          </label>
+          <button type="submit" id="galleryFormBtn">Add piece</button>
+        </form>
+        <div class="admin-list" id="galleryList"></div>
+      </div>
+    </section>
+
+    <!-- REVIEWS MANAGEMENT -->
+    <section class="admin-section">
+      <h2>Pending reviews</h2>
+      <div class="admin-card">
+        <p class="empty-note" id="pendingReviewsEmpty" style="display:none;">No pending reviews right now.</p>
+        <div class="admin-list" id="pendingReviewsList"></div>
+      </div>
+    </section>
+
+    <section class="admin-section">
+      <h2>Reviews</h2>
+      <div class="admin-card">
+        <form id="testimonialForm" class="item-form">
+          <input type="hidden" id="editTestimonialId" value="">
+          <label>Client name
+            <input type="text" id="clientName" required>
+          </label>
+          <label>Rating
+            <select id="clientRating">
+              <option value="5">5 stars</option>
+              <option value="4">4 stars</option>
+              <option value="3">3 stars</option>
+              <option value="2">2 stars</option>
+              <option value="1">1 star</option>
+            </select>
+          </label>
+          <label class="full">Review
+            <textarea id="clientQuote" required></textarea>
+          </label>
+          <button type="submit" id="testimonialFormBtn">Add review</button>
+        </form>
+        <div class="admin-list" id="testimonialsList"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="admin-section">
+      <h2>Announcement bar</h2>
+      <div class="admin-card">
+        <form id="announcementForm" class="item-form">
+          <label class="full" style="flex-direction:row; align-items:center; gap:0.6rem;">
+            <input type="checkbox" id="announcementEnabled" style="width:auto;">
+            <span>Show announcement bar at the top of the site</span>
+          </label>
+          <label class="full">Announcement text
+            <input type="text" id="announcementText" placeholder="e.g. FLAT 20% OFF this week only">
+          </label>
+          <button type="submit">Save announcement bar</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="admin-section">
+      <h2>Contact &amp; social links</h2>
+      <div class="admin-card">
+        <form id="settingsForm" class="item-form">
+          <label class="full">WhatsApp number (with country code, no + or spaces — e.g. 923001234567)
+            <input type="text" id="whatsappNumber" placeholder="923001234567">
+          </label>
+          <label class="full">Facebook page URL
+            <input type="text" id="facebookUrl" placeholder="https://facebook.com/yourpage">
+          </label>
+          <label class="full">Instagram profile URL
+            <input type="text" id="instagramUrl" placeholder="https://instagram.com/yourprofile">
+          </label>
+          <button type="submit">Save settings</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- CHANGE PASSWORD -->
+    <section class="admin-section">
+      <h2>Change password</h2>
+      <div class="admin-card">
+        <form id="passwordForm" class="item-form">
+          <label>Current password
+            <input type="password" id="currentPassword" required>
+          </label>
+          <label>New password
+            <input type="password" id="newPassword" required minlength="6">
+          </label>
+          <button type="submit">Update password</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/admin/admin.js"></script>
+</body>
+</html>

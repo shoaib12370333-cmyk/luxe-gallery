@@ -1,0 +1,173 @@
+.admin-body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--sand);
+  padding: 2rem;
+}
+
+.login-card {
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 380px;
+}
+.login-card h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.6rem;
+  margin-bottom: 1.8rem;
+}
+.login-card form { display: flex; flex-direction: column; gap: 1.2rem; }
+.login-card label { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.88rem; color: var(--bronze); }
+.login-card input {
+  font-family: var(--font-body);
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #fff;
+}
+.login-card input:focus { outline: 2px solid var(--bronze); outline-offset: 1px; }
+.login-card button {
+  margin-top: 0.6rem;
+  background: var(--espresso);
+  color: var(--ivory);
+  border: none;
+  padding: 13px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.25s var(--ease);
+}
+.login-card button:hover { background: var(--bronze); }
+.error-msg { color: #a3382c; font-size: 0.85rem; min-height: 1.2em; }
+
+/* ---------- Dashboard ---------- */
+.admin-shell { min-height: 100vh; background: var(--sand); }
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.4rem 2rem;
+  background: var(--ivory);
+  border-bottom: 1px solid var(--line);
+}
+.admin-topbar .wordmark { font-size: 1.1rem; }
+.admin-topbar-actions { display: flex; gap: 1rem; align-items: center; }
+.admin-topbar-actions a, .admin-topbar-actions button {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  background: none;
+  border: 1px solid var(--line);
+  padding: 8px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  color: var(--espresso);
+}
+.admin-topbar-actions button:hover, .admin-topbar-actions a:hover { background: var(--espresso); color: var(--ivory); }
+
+.admin-content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+.admin-section { margin-bottom: 3.5rem; }
+.admin-section h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.admin-card {
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.6rem;
+}
+
+.item-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.item-form .full { grid-column: 1 / -1; }
+.item-form label { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem; color: var(--bronze); }
+.item-form input, .item-form textarea, .item-form select {
+  font-family: var(--font-body);
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+}
+.item-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--espresso);
+  cursor: pointer;
+}
+.item-form textarea { resize: vertical; min-height: 70px; }
+.item-form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  background: var(--espresso);
+  color: var(--ivory);
+  border: none;
+  padding: 11px 24px;
+  border-radius: 100px;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.item-form button:hover { background: var(--bronze); }
+
+.admin-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.admin-list-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+}
+.admin-list-row img { width: 52px; height: 52px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+.admin-list-row .info { flex: 1; min-width: 0; }
+.admin-list-row .info strong { display: block; font-size: 0.92rem; }
+.admin-list-row .info span { font-size: 0.8rem; color: var(--bronze); }
+.admin-list-row .row-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.admin-list-row .row-actions button {
+  font-size: 0.78rem;
+  border: 1px solid var(--line);
+  background: none;
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.admin-list-row .row-actions button.delete:hover { background: #a3382c; color: #fff; border-color: #a3382c; }
+.admin-list-row .row-actions button.edit:hover { background: var(--espresso); color: var(--ivory); }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--espresso);
+  color: var(--ivory);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  z-index: 200;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: #a3382c; }
+
+.empty-note { color: var(--bronze); font-size: 0.88rem; padding: 1rem 0; }
+
+.site-image-preview {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}

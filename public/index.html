@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luxe Gallery — Sculptural Wall Art</title>
+<meta name="description" content="Luxe Gallery creates handcrafted sculptural wall art — textured, contemporary pieces made to anchor a room.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="grain-overlay"></div>
+
+<div class="announcement-bar" id="announcementBar" style="display:none;">
+  <p id="announcementText"></p>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="#top" class="wordmark">Luxe Gallery</a>
+    <nav class="main-nav">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-right">
+      <div class="social-links" id="socialLinks"></div>
+      <a href="#contact" class="nav-cta">Enquire</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-media">
+      <img src="/img/hero-placeholder.jpg" alt="Sculptural textured wall art piece in a neutral living room" id="heroImage">
+    </div>
+    <div class="hero-copy">
+      <p class="hero-eyebrow">Handcrafted sculptural wall art</p>
+      <h1 class="hero-title">Texture,<br>carried in light.</h1>
+      <p class="hero-sub">Each piece is cast, carved, and finished by hand — built to hold a room's attention without asking for it.</p>
+      <a href="#work" class="hero-link">View the collection ↓</a>
+    </div>
+  </section>
+
+  <!-- DISCOUNT BANNER -->
+  <section class="discount-banner" id="discountBanner" style="display:none;">
+    <p id="discountBannerText"></p>
+  </section>
+
+  <!-- GALLERY / WORK -->
+  <section class="work" id="work">
+    <div class="section-head">
+      <h2>The Collection</h2>
+      <p>A working collection, shaped in plaster and stone composite, one commission at a time.</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <!-- injected by js/gallery.js -->
+      <p class="gallery-empty" id="galleryEmpty" style="display:none;">New pieces are being added to the collection — check back soon.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <div class="about-image">
+        <img src="/img/about-placeholder.jpg" alt="Close-up detail of hand-textured plaster wall art" id="aboutImage">
+      </div>
+      <div class="about-copy">
+        <p class="section-eyebrow">About the studio</p>
+        <h2>Made by hand, meant to last on your wall.</h2>
+        <p>Luxe Gallery began with a simple idea: a wall deserves more than a print behind glass. Every piece here starts as raw plaster and fiber composite, shaped in a mould, then hand-carved while the material is still workable — the ridges, the folds, the light and shadow are all done by hand, not printed on.</p>
+        <p>The result is a surface that changes with the light in your room throughout the day. No two pieces carve exactly alike.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="testimonials" id="testimonials">
+    <div class="section-head light">
+      <h2>Tell us about your experience</h2>
+      <p>Real feedback from people who've brought a piece into their space.</p>
+    </div>
+    <div class="testimonials-track" id="testimonialsTrack">
+      <!-- injected by js/gallery.js -->
+    </div>
+
+    <div class="review-form-wrap">
+      <h3>Share your review</h3>
+      <p class="review-form-note">Your review will appear here once we've had a chance to look it over.</p>
+      <form id="reviewForm" class="review-form">
+        <label>
+          Your name
+          <input type="text" id="reviewName" required maxlength="100">
+        </label>
+        <label>
+          Your rating
+          <div class="star-input" id="starInput" role="radiogroup" aria-label="Rating">
+            <button type="button" class="star-btn" data-value="1" aria-label="1 star">&#9733;</button>
+            <button type="button" class="star-btn" data-value="2" aria-label="2 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-value="3" aria-label="3 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-value="4" aria-label="4 stars">&#9733;</button>
+            <button type="button" class="star-btn" data-value="5" aria-label="5 stars">&#9733;</button>
+          </div>
+          <input type="hidden" id="reviewRating" value="5">
+        </label>
+        <label class="full">
+          Your review
+          <textarea id="reviewText" required maxlength="1000" placeholder="Tell us what you liked, how the piece looks in your space, anything at all..."></textarea>
+        </label>
+        <p class="review-form-error" id="reviewFormError"></p>
+        <button type="submit" id="reviewFormSubmit">Submit review</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <p class="section-eyebrow">Get in touch</p>
+      <h2>Have a wall in mind?</h2>
+      <p class="contact-sub">Tell us the space, the size, the mood — we'll help you shape a piece for it.</p>
+      <a href="#" class="whatsapp-btn" id="whatsappBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 4.99L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.26-8.23zm-4.53 4.6c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.7 2.72 4.2 3.7 2.08.82 2.5.66 2.95.62.45-.04 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.45-.72-1.67-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.35-.76-1.84-.2-.48-.4-.42-.55-.42h-.36z"/></svg>
+        <span>Chat on WhatsApp</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; <span id="year"></span> Luxe Gallery. All pieces handcrafted to order.</p>
+    <div class="social-links" id="footerSocialLinks"></div>
+  </div>
+</footer>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="product-modal" id="productModal" aria-hidden="true">
+  <div class="product-modal-backdrop" id="productModalBackdrop"></div>
+  <div class="product-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="product-modal-close" id="productModalClose" aria-label="Close">&times;</button>
+    <div class="product-modal-image">
+      <img id="modalImage" src="" alt="">
+    </div>
+    <div class="product-modal-info">
+      <p class="product-modal-category" id="modalCategory"></p>
+      <h3 id="modalTitle"></h3>
+      <p class="product-modal-price" id="modalPrice"></p>
+      <p class="product-modal-description" id="modalDescription"></p>
+      <div class="product-modal-dimensions" id="modalDimensionsWrap" style="display:none;">
+        <p class="dim-label">Available dimensions</p>
+        <div class="dim-options" id="modalDimensions"></div>
+      </div>
+      <a href="#" class="whatsapp-btn modal-whatsapp-btn" id="modalWhatsappBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 4.99L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.26-8.23zm-4.53 4.6c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.7 2.72 4.2 3.7 2.08.82 2.5.66 2.95.62.45-.04 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.45-.72-1.67-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.35-.76-1.84-.2-.48-.4-.42-.55-.42h-.36z"/></svg>
+        <span>Enquire on WhatsApp</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="/js/gallery.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
