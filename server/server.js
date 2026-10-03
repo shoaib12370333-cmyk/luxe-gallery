@@ -3,6 +3,7 @@ const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
 
@@ -12,14 +13,33 @@ const PORT = process.env.PORT || 3000;
 const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
+app.set('trust proxy', 1); // hosts like Railway/Render terminate HTTPS in front of the app
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: 'luxe-gallery-secret-change-in-production',
+  // Set SESSION_SECRET on your host. Without it a random secret is used, which
+  // only means admins have to log in again after a server restart.
+  secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 hour session
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 8, // 8 hour session
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: 'auto' // secure cookie whenever the request came in over HTTPS
+  }
 }));
+
+// ---------- Admin page guard ----------
+// The dashboard files must never be served to someone who isn't logged in
+// (a client-side redirect alone can be bypassed). The login page stays public.
+const ADMIN_PROTECTED = new Set(['/admin/dashboard.html', '/admin/admin.js']);
+app.use((req, res, next) => {
+  if (!ADMIN_PROTECTED.has(req.path)) return next();
+  res.set('Cache-Control', 'no-store');
+  if (req.session && req.session.isAdmin) return next();
+  return res.redirect('/admin/index.html');
+});
 
 // Static files
 app.use('/uploads', express.static(UPLOADS_DIR));
@@ -87,17 +107,35 @@ app.get('/api/settings', (req, res) => {
 
 // ================= ADMIN AUTH =================
 
+// Simple in-memory brute-force protection: 8 failed attempts per IP per 15 minutes.
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 8;
+const WINDOW_MS = 15 * 60 * 1000;
+
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
 
+  const now = Date.now();
+  const entry = loginAttempts.get(req.ip);
+  if (entry && now - entry.first < WINDOW_MS && entry.count >= MAX_ATTEMPTS) {
+    return res.status(429).json({ error: 'Too many failed attempts. Please try again in a few minutes.' });
+  }
+
   const user = db.prepare('SELECT * FROM admin_users WHERE username = ?').get(username);
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    if (!entry || now - entry.first >= WINDOW_MS) loginAttempts.set(req.ip, { first: now, count: 1 });
+    else entry.count++;
     return res.status(401).json({ error: 'Invalid username or password' });
   }
-  req.session.isAdmin = true;
-  req.session.username = username;
-  res.json({ success: true });
+  loginAttempts.delete(req.ip);
+  // fresh session id on login (prevents session fixation)
+  req.session.regenerate((err) => {
+    if (err) return res.status(500).json({ error: 'Could not start session' });
+    req.session.isAdmin = true;
+    req.session.username = username;
+    res.json({ success: true });
+  });
 });
 
 app.post('/api/admin/logout', (req, res) => {
@@ -110,11 +148,15 @@ app.get('/api/admin/check', (req, res) => {
 
 // Diagnostic route — does not reveal credentials, just confirms an admin
 // account exists in the database. Useful for troubleshooting login issues
-// without needing shell/console access to the server.
+// without needing shell/console access to the server. Usernames are only
+// shown to a logged-in admin so strangers can't learn the login name.
 app.get('/api/admin/status', (req, res) => {
   const count = db.prepare('SELECT COUNT(*) as c FROM admin_users').get().c;
-  const usernames = db.prepare('SELECT username FROM admin_users').all().map(u => u.username);
-  res.json({ adminAccountCount: count, usernames });
+  const out = { adminAccountCount: count };
+  if (req.session && req.session.isAdmin) {
+    out.usernames = db.prepare('SELECT username FROM admin_users').all().map(u => u.username);
+  }
+  res.json(out);
 });
 
 // Recovery route — only works if RESET_ADMIN_KEY is set as an environment

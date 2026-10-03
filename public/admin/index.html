@@ -64,8 +64,6 @@
         const data = await res.json();
         if (data.adminAccountCount === 0) {
           errorMsg.textContent = 'No admin account exists on this server yet. See the README for recovery steps.';
-        } else {
-          errorMsg.textContent += ` (Account(s) on file: ${data.usernames.join(', ')})`;
         }
       } catch (err) {
         // Silently ignore — this is a best-effort diagnostic only.

@@ -531,42 +531,40 @@ section { padding: var(--section-y) var(--gutter); }
 }
 
 /* ============ GALLERY ============ */
+/* Masonry: every photo keeps its own proportions, so nothing is ever cropped. */
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(1rem, 2vw, 1.75rem);
-  row-gap: clamp(1.6rem, 3vw, 2.6rem);
+  column-count: 3;
+  column-gap: clamp(1rem, 2vw, 1.75rem);
 }
 .gallery-item {
   position: relative;
   cursor: pointer;
-  grid-column: span 2;
-  min-width: 0;
+  display: block;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin-bottom: clamp(1.6rem, 3vw, 2.4rem);
 }
-.gallery-item.slot-0 { grid-column: span 4; }
-.gallery-item.slot-1 { grid-column: span 2; }
-.gallery-item.slot-2 { grid-column: span 2; }
-.gallery-item.slot-3 { grid-column: span 4; }
 .gallery-item.is-hidden { display: none; }
 .gallery-item:focus-visible { outline: 2px solid var(--bronze); outline-offset: 6px; border-radius: 6px; }
 
 .gallery-item .frame {
   position: relative;
-  aspect-ratio: 4/5;
+  aspect-ratio: 4/5;           /* placeholder size until the photo has loaded */
   overflow: hidden;
   border-radius: 6px;
-  background: var(--taupe);
+  background: var(--sand-deep);
 }
-.gallery-item.slot-0 .frame, .gallery-item.slot-3 .frame { aspect-ratio: 16/11; }
+.gallery-item .frame.is-loaded { aspect-ratio: auto; }
 .gallery-item img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;                /* natural proportions */
   opacity: 0;
   transition: transform 1s var(--ease-out), opacity 0.6s var(--ease);
 }
+.gallery-item .frame:not(.is-loaded) img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
 .gallery-item img.loaded { opacity: 1; }
-.gallery-item:hover img { transform: scale(1.06); }
+.gallery-item:hover img { transform: scale(1.04); }
 
 .gallery-item .tag {
   position: absolute;
@@ -626,19 +624,16 @@ section { padding: var(--section-y) var(--gutter); }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
 .gallery-empty {
-  grid-column: 1 / -1;
+  column-span: all;
   text-align: center;
   color: var(--bronze);
   padding: 3rem 0;
 }
 
-@media (max-width: 1000px) {
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-  .gallery-item, .gallery-item.slot-0, .gallery-item.slot-1, .gallery-item.slot-2, .gallery-item.slot-3 { grid-column: span 1; }
-  .gallery-item.slot-0 .frame, .gallery-item.slot-3 .frame { aspect-ratio: 4/5; }
-}
+@media (max-width: 1000px) { .gallery-grid { column-count: 2; } }
 @media (max-width: 520px) {
-  .gallery-grid { gap: 0.8rem; row-gap: 1.5rem; }
+  .gallery-grid { column-gap: 0.8rem; }
+  .gallery-item { margin-bottom: 1.4rem; }
   .gallery-item .caption { flex-direction: column; gap: 0.15rem; padding-top: 0.7rem; }
   .gallery-item .tag { top: 8px; left: 8px; font-size: 0.62rem; padding: 4px 9px; }
 }
@@ -1018,8 +1013,21 @@ a:focus-visible, button:focus-visible {
 }
 .product-modal-close:hover { background: var(--espresso); color: var(--ivory); transform: rotate(90deg); }
 
-.product-modal-image { position: relative; background: var(--taupe); min-height: 360px; }
-.product-modal-image img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.product-modal-image {
+  position: relative;
+  background: var(--sand-deep);
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+}
+.product-modal-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 92vh;
+  max-height: 92dvh;
+  object-fit: contain;         /* whole photo, never cropped */
+}
 .modal-nav { position: absolute; left: 14px; bottom: 14px; display: flex; gap: 0.5rem; z-index: 2; }
 .modal-nav button {
   width: 42px; height: 42px;
@@ -1081,14 +1089,15 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 760px) {
   .product-modal { align-items: flex-end; padding: 0; }
   .product-modal-panel {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    display: block;            /* image on top, details below, whole sheet scrolls */
+    max-height: 94vh;
     max-height: 94dvh;
     border-radius: 18px 18px 0 0;
     overflow-y: auto;
     transform: translateY(40px);
   }
-  .product-modal-image { min-height: 0; aspect-ratio: 4/3.4; }
+  .product-modal-image { min-height: 0; }
+  .product-modal-image img { max-height: 58vh; max-height: 58dvh; }
   .product-modal-info { overflow: visible; max-height: none; padding: 1.4rem 1.3rem max(1.6rem, env(safe-area-inset-bottom)); }
   .modal-whatsapp-btn { margin-top: 0.4rem; position: sticky; bottom: 0; }
 }

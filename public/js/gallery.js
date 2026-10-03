@@ -43,10 +43,14 @@ async function loadGallery() {
         </div>
       `;
       const img = el.querySelector('img');
-      if (img.complete) img.classList.add('loaded');
+      const markLoaded = () => {
+        img.classList.add('loaded');
+        img.parentElement.classList.add('is-loaded'); // frame switches to the photo's own proportions
+      };
+      if (img.complete && img.naturalWidth) markLoaded();
       else {
-        img.addEventListener('load', () => img.classList.add('loaded'));
-        img.addEventListener('error', () => img.classList.add('loaded'));
+        img.addEventListener('load', markLoaded);
+        img.addEventListener('error', markLoaded);
       }
       el.addEventListener('click', () => openProductModal(item));
       el.addEventListener('keydown', (e) => {
@@ -94,9 +98,7 @@ function applyFilter(cat, instant = true) {
   galleryItems.forEach(item => {
     const show = cat === 'all' || (item.category || '').trim() === cat;
     item._el.classList.toggle('is-hidden', !show);
-    for (let s = 0; s < 4; s++) item._el.classList.remove('slot-' + s);
     if (show) {
-      item._el.classList.add('slot-' + (visibleItems.length % 4));
       visibleItems.push(item);
       // cards revealed by a filter click show right away (no scroll trigger needed)
       if (instant) requestAnimationFrame(() => item._el.classList.add('is-visible'));
