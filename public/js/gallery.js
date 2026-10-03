@@ -3,6 +3,9 @@
 
 let siteSettings = {};
 let galleryItems = [];
+let visibleItems = [];   // items currently shown (after category filter)
+let currentModalIndex = -1;
+let lastFocusedEl = null;
 
 async function loadGallery() {
   const grid = document.getElementById('galleryGrid');
@@ -10,40 +13,97 @@ async function loadGallery() {
   try {
     const res = await fetch('/api/gallery');
     galleryItems = await res.json();
+    grid.querySelectorAll('.skeleton').forEach(s => s.remove());
+
+    const stat = document.getElementById('statPieces');
+    if (stat) stat.textContent = galleryItems.length;
 
     if (!galleryItems.length) {
       emptyMsg.style.display = 'block';
       return;
     }
 
-    galleryItems.forEach(item => {
+    galleryItems.forEach((item, i) => {
       const el = document.createElement('article');
       el.className = 'gallery-item reveal';
+      el.dataset.category = item.category || '';
+      el.style.setProperty('--d', `${Math.min(i % 3, 2) * 0.08}s`);
       el.tabIndex = 0;
       el.setAttribute('role', 'button');
       el.setAttribute('aria-label', `View details for ${item.title}`);
       el.innerHTML = `
         <div class="frame">
           <img src="${item.image_path}" alt="${escapeHtml(item.title)}" loading="lazy">
+          ${item.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ''}
+          <span class="view" aria-hidden="true">&#8599;</span>
         </div>
         <div class="caption">
           <h3>${escapeHtml(item.title)}</h3>
-          <span>${item.price ? escapeHtml(formatPrice(item.price)) : escapeHtml(item.category || '')}</span>
+          <span>${item.price ? escapeHtml(formatPrice(item.price)) : ''}</span>
         </div>
       `;
+      const img = el.querySelector('img');
+      if (img.complete) img.classList.add('loaded');
+      else {
+        img.addEventListener('load', () => img.classList.add('loaded'));
+        img.addEventListener('error', () => img.classList.add('loaded'));
+      }
       el.addEventListener('click', () => openProductModal(item));
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProductModal(item); }
       });
+      item._el = el;
       grid.appendChild(el);
     });
 
+    buildFilters();
+    applyFilter('all', false);
     observeReveals();
   } catch (err) {
     console.error('Could not load gallery items:', err);
+    grid.querySelectorAll('.skeleton').forEach(s => s.remove());
     emptyMsg.textContent = 'The collection could not be loaded right now.';
     emptyMsg.style.display = 'block';
   }
+}
+
+// ---- Category filters ----
+function buildFilters() {
+  const wrap = document.getElementById('galleryFilters');
+  const cats = [...new Set(galleryItems.map(i => (i.category || '').trim()).filter(Boolean))];
+  if (cats.length < 2) return; // nothing worth filtering
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '';
+  ['all', ...cats].forEach(cat => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'filter-chip' + (cat === 'all' ? ' active' : '');
+    b.textContent = cat === 'all' ? 'All' : cat;
+    b.dataset.cat = cat;
+    b.setAttribute('role', 'tab');
+    b.addEventListener('click', () => {
+      wrap.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === b));
+      applyFilter(cat);
+    });
+    wrap.appendChild(b);
+  });
+}
+
+function applyFilter(cat, instant = true) {
+  visibleItems = [];
+  galleryItems.forEach(item => {
+    const show = cat === 'all' || (item.category || '').trim() === cat;
+    item._el.classList.toggle('is-hidden', !show);
+    for (let s = 0; s < 4; s++) item._el.classList.remove('slot-' + s);
+    if (show) {
+      item._el.classList.add('slot-' + (visibleItems.length % 4));
+      visibleItems.push(item);
+      // cards revealed by a filter click show right away (no scroll trigger needed)
+      if (instant) requestAnimationFrame(() => item._el.classList.add('is-visible'));
+    }
+  });
+  const count = document.getElementById('workCount');
+  if (count) count.textContent = `${visibleItems.length} ${visibleItems.length === 1 ? 'piece' : 'pieces'}`;
 }
 
 function formatPrice(price) {
@@ -56,6 +116,12 @@ function formatPrice(price) {
 // ================= PRODUCT MODAL =================
 
 function openProductModal(item) {
+  const modal = document.getElementById('productModal');
+  if (!modal.classList.contains('is-open')) lastFocusedEl = document.activeElement;
+  currentModalIndex = visibleItems.indexOf(item);
+  const multi = visibleItems.length > 1;
+  document.querySelector('.modal-nav').style.display = multi ? 'flex' : 'none';
+
   document.getElementById('modalImage').src = item.image_path;
   document.getElementById('modalImage').alt = item.title;
   document.getElementById('modalCategory').textContent = item.category || '';
@@ -92,10 +158,16 @@ function openProductModal(item) {
 
   updateModalWhatsappLink(item, selectedDim);
 
-  const modal = document.getElementById('productModal');
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
+  document.getElementById('productModalClose').focus({ preventScroll: true });
+}
+
+function stepModal(dir) {
+  if (currentModalIndex < 0 || visibleItems.length < 2) return;
+  const next = (currentModalIndex + dir + visibleItems.length) % visibleItems.length;
+  openProductModal(visibleItems[next]);
 }
 
 function updateModalWhatsappLink(item, selectedDim) {
@@ -119,14 +191,42 @@ function closeProductModal() {
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
+  if (lastFocusedEl && lastFocusedEl.focus) lastFocusedEl.focus({ preventScroll: true });
+  lastFocusedEl = null;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('productModalClose').addEventListener('click', closeProductModal);
   document.getElementById('productModalBackdrop').addEventListener('click', closeProductModal);
+  document.getElementById('modalPrev').addEventListener('click', () => stepModal(-1));
+  document.getElementById('modalNext').addEventListener('click', () => stepModal(1));
   document.addEventListener('keydown', (e) => {
+    const open = document.getElementById('productModal').classList.contains('is-open');
+    if (!open) return;
     if (e.key === 'Escape') closeProductModal();
+    else if (e.key === 'ArrowLeft') stepModal(-1);
+    else if (e.key === 'ArrowRight') stepModal(1);
+    else if (e.key === 'Tab') {
+      // keep keyboard focus inside the dialog
+      const focusable = document.querySelectorAll('#productModal .product-modal-panel button, #productModal .product-modal-panel a[href]');
+      const list = [...focusable].filter(el => el.offsetParent !== null);
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
+
+  // swipe left/right on the modal image (touch devices)
+  const panel = document.querySelector('.product-modal-image');
+  let touchX = null;
+  panel.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  panel.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) > 50) stepModal(dx < 0 ? 1 : -1);
+  }, { passive: true });
 });
 
 // ================= TESTIMONIALS =================
@@ -138,20 +238,33 @@ async function loadTestimonials() {
     const items = await res.json();
 
     if (!items.length) {
-      track.innerHTML = '<p style="color: var(--taupe);">Reviews will appear here soon.</p>';
+      track.innerHTML = '<p class="testimonial-empty">Reviews will appear here soon.</p>';
       return;
     }
 
-    items.forEach(t => {
+    items.forEach((t, i) => {
       const el = document.createElement('div');
       el.className = 'testimonial-card reveal';
+      el.style.setProperty('--d', `${(i % 3) * 0.1}s`);
+      const initial = escapeHtml((t.client_name || '?').trim().charAt(0).toUpperCase());
       el.innerHTML = `
         <div class="stars-display">${renderStars(t.rating || 5)}</div>
-        <p class="quote">"${escapeHtml(t.quote)}"</p>
-        <p class="name">${escapeHtml(t.client_name)}</p>
+        <p class="quote">&ldquo;${escapeHtml(t.quote)}&rdquo;</p>
+        <div class="who"><span class="avatar" aria-hidden="true">${initial}</span><p class="name">${escapeHtml(t.client_name)}</p></div>
       `;
       track.appendChild(el);
     });
+
+    // average rating summary
+    const summary = document.getElementById('ratingSummary');
+    if (summary) {
+      const avg = items.reduce((s, t) => s + (Number(t.rating) || 5), 0) / items.length;
+      summary.innerHTML = `
+        <strong>${avg.toFixed(1)}</strong>
+        <div><div class="stars-display" style="margin:0">${renderStars(avg)}</div>
+        <small>from ${items.length} ${items.length === 1 ? 'review' : 'reviews'}</small></div>`;
+      summary.style.display = 'flex';
+    }
 
     observeReveals();
   } catch (err) {
@@ -272,6 +385,7 @@ async function loadSettings() {
     // Social links (header + footer)
     renderSocialLinks('socialLinks');
     renderSocialLinks('footerSocialLinks');
+    renderSocialLinks('mobileSocialLinks');
 
   } catch (err) {
     console.error('Could not load site settings:', err);
@@ -342,6 +456,7 @@ function observeReveals() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  observeReveals(); // static sections (about, process, contact) — dynamic ones re-observe after loading
   loadSettings().then(() => {
     loadGallery();
   });

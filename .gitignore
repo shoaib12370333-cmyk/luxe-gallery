@@ -1,0 +1,4 @@
+node_modules/
+server/luxegallery.db*
+uploads/*
+!uploads/.gitkeep

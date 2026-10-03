@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#EDE7DD">
 <title>Luxe Gallery — Sculptural Wall Art</title>
 <meta name="description" content="Luxe Gallery creates handcrafted sculptural wall art — textured, contemporary pieces made to anchor a room.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
 <div class="grain-overlay"></div>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
 <div class="announcement-bar" id="announcementBar" style="display:none;">
   <p id="announcementText"></p>
@@ -20,32 +22,74 @@
 
 <header class="site-header" id="siteHeader">
   <div class="header-inner">
-    <a href="#top" class="wordmark">Luxe Gallery</a>
-    <nav class="main-nav">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#testimonials">Reviews</a>
-      <a href="#contact">Contact</a>
+    <a href="#top" class="wordmark" aria-label="Luxe Gallery home">Luxe<span>Gallery</span></a>
+    <nav class="main-nav" aria-label="Main">
+      <a href="#work" data-nav="work">Collection</a>
+      <a href="#about" data-nav="about">Studio</a>
+      <a href="#process" data-nav="process">Process</a>
+      <a href="#testimonials" data-nav="testimonials">Reviews</a>
+      <a href="#contact" data-nav="contact">Contact</a>
     </nav>
     <div class="header-right">
       <div class="social-links" id="socialLinks"></div>
       <a href="#contact" class="nav-cta">Enquire</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Mobile">
+    <a href="#work">Collection</a>
+    <a href="#about">Studio</a>
+    <a href="#process">Process</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="mobile-menu-foot">
+    <div class="social-links" id="mobileSocialLinks"></div>
+    <p>Handcrafted sculptural wall art</p>
+  </div>
+</div>
 
 <main id="top">
 
   <!-- HERO -->
   <section class="hero">
     <div class="hero-media">
-      <img src="/img/hero-placeholder.jpg" alt="Sculptural textured wall art piece in a neutral living room" id="heroImage">
+      <img src="/img/hero-placeholder.jpg" alt="Sculptural textured wall art piece in a neutral living room" id="heroImage" fetchpriority="high">
     </div>
-    <div class="hero-copy">
-      <p class="hero-eyebrow">Handcrafted sculptural wall art</p>
-      <h1 class="hero-title">Texture,<br>carried in light.</h1>
-      <p class="hero-sub">Each piece is cast, carved, and finished by hand — built to hold a room's attention without asking for it.</p>
-      <a href="#work" class="hero-link">View the collection ↓</a>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="hero-eyebrow"><span class="dot"></span>Handcrafted sculptural wall art</p>
+        <h1 class="hero-title">
+          <span class="line"><span>Texture,</span></span>
+          <span class="line"><span><em>carried</em> in light.</span></span>
+        </h1>
+        <p class="hero-sub">Each piece is cast, carved, and finished by hand — built to hold a room's attention without asking for it.</p>
+        <div class="hero-actions">
+          <a href="#work" class="btn btn-light">View the collection</a>
+          <a href="#contact" class="btn btn-ghost-light">Commission a piece</a>
+        </div>
+      </div>
+      <a href="#work" class="scroll-cue" aria-label="Scroll to collection">
+        <span>Scroll</span><i></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- TRUST STRIP -->
+  <section class="strip" aria-label="Highlights">
+    <div class="strip-track">
+      <div class="strip-group">
+        <span>Hand-carved</span><i></i><span>Made to order</span><i></i><span>One of a kind</span><i></i><span>Plaster &amp; stone composite</span><i></i>
+      </div>
+      <div class="strip-group" aria-hidden="true">
+        <span>Hand-carved</span><i></i><span>Made to order</span><i></i><span>One of a kind</span><i></i><span>Plaster &amp; stone composite</span><i></i>
+      </div>
     </div>
   </section>
 
@@ -56,12 +100,24 @@
 
   <!-- GALLERY / WORK -->
   <section class="work" id="work">
-    <div class="section-head">
-      <h2>The Collection</h2>
-      <p>A working collection, shaped in plaster and stone composite, one commission at a time.</p>
+    <div class="section-head split">
+      <div>
+        <p class="section-eyebrow">The collection</p>
+        <h2>Pieces shaped one <em>commission</em> at a time.</h2>
+      </div>
+      <div class="section-head-side">
+        <p>A working collection, shaped in plaster and stone composite. Tap any piece for sizes, price and to enquire.</p>
+        <p class="work-count" id="workCount"></p>
+      </div>
     </div>
+
+    <div class="filters" id="galleryFilters" role="tablist" aria-label="Filter by category" style="display:none;"></div>
+
     <div class="gallery-grid" id="galleryGrid">
-      <!-- injected by js/gallery.js -->
+      <!-- skeletons replaced by js/gallery.js -->
+      <div class="gallery-item skeleton" aria-hidden="true"><div class="frame"></div></div>
+      <div class="gallery-item skeleton" aria-hidden="true"><div class="frame"></div></div>
+      <div class="gallery-item skeleton" aria-hidden="true"><div class="frame"></div></div>
       <p class="gallery-empty" id="galleryEmpty" style="display:none;">New pieces are being added to the collection — check back soon.</p>
     </div>
   </section>
@@ -69,35 +125,74 @@
   <!-- ABOUT -->
   <section class="about" id="about">
     <div class="about-inner">
-      <div class="about-image">
-        <img src="/img/about-placeholder.jpg" alt="Close-up detail of hand-textured plaster wall art" id="aboutImage">
+      <div class="about-image reveal">
+        <img src="/img/about-placeholder.jpg" alt="Close-up detail of hand-textured plaster wall art" id="aboutImage" loading="lazy">
+        <div class="about-badge"><strong id="statPieces">—</strong><span>pieces in the collection</span></div>
       </div>
-      <div class="about-copy">
+      <div class="about-copy reveal">
         <p class="section-eyebrow">About the studio</p>
-        <h2>Made by hand, meant to last on your wall.</h2>
+        <h2>Made by hand, meant to last on <em>your</em> wall.</h2>
         <p>Luxe Gallery began with a simple idea: a wall deserves more than a print behind glass. Every piece here starts as raw plaster and fiber composite, shaped in a mould, then hand-carved while the material is still workable — the ridges, the folds, the light and shadow are all done by hand, not printed on.</p>
         <p>The result is a surface that changes with the light in your room throughout the day. No two pieces carve exactly alike.</p>
+        <div class="about-points">
+          <div><strong>Cast</strong><span>Plaster &amp; fiber composite</span></div>
+          <div><strong>Carved</strong><span>Detailed by hand</span></div>
+          <div><strong>Finished</strong><span>Made to anchor a room</span></div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="section-head">
+      <p class="section-eyebrow">How it works</p>
+      <h2>From a message to your <em>wall</em>.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step-num">01</span>
+        <h3>Browse &amp; choose</h3>
+        <p>Explore the collection and open any piece to see its price, description and available sizes.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step-num">02</span>
+        <h3>Enquire on WhatsApp</h3>
+        <p>One tap sends us the piece and size you picked. Tell us about your space and the mood you want.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step-num">03</span>
+        <h3>We make it for you</h3>
+        <p>We confirm the details together, then cast, carve and finish your piece by hand.</p>
+      </li>
+    </ol>
+  </section>
+
   <!-- REVIEWS -->
   <section class="testimonials" id="testimonials">
-    <div class="section-head light">
-      <h2>Tell us about your experience</h2>
-      <p>Real feedback from people who've brought a piece into their space.</p>
+    <div class="section-head split light">
+      <div>
+        <p class="section-eyebrow">Reviews</p>
+        <h2>Tell us about your <em>experience</em>.</h2>
+      </div>
+      <div class="section-head-side">
+        <p>Real feedback from people who've brought a piece into their space.</p>
+        <div class="rating-summary" id="ratingSummary" style="display:none;"></div>
+      </div>
     </div>
     <div class="testimonials-track" id="testimonialsTrack">
       <!-- injected by js/gallery.js -->
     </div>
 
     <div class="review-form-wrap">
-      <h3>Share your review</h3>
-      <p class="review-form-note">Your review will appear here once we've had a chance to look it over.</p>
+      <div class="review-form-intro">
+        <h3>Share your review</h3>
+        <p class="review-form-note">Your review will appear here once we've had a chance to look it over.</p>
+      </div>
       <form id="reviewForm" class="review-form">
         <label>
           Your name
-          <input type="text" id="reviewName" required maxlength="100">
+          <input type="text" id="reviewName" required maxlength="100" autocomplete="name">
         </label>
         <label>
           Your rating
@@ -114,7 +209,7 @@
           Your review
           <textarea id="reviewText" required maxlength="1000" placeholder="Tell us what you liked, how the piece looks in your space, anything at all..."></textarea>
         </label>
-        <p class="review-form-error" id="reviewFormError"></p>
+        <p class="review-form-error" id="reviewFormError" role="status"></p>
         <button type="submit" id="reviewFormSubmit">Submit review</button>
       </form>
     </div>
@@ -122,14 +217,16 @@
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
-    <div class="contact-inner">
-      <p class="section-eyebrow">Get in touch</p>
-      <h2>Have a wall in mind?</h2>
-      <p class="contact-sub">Tell us the space, the size, the mood — we'll help you shape a piece for it.</p>
-      <a href="#" class="whatsapp-btn" id="whatsappBtn" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 4.99L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.26-8.23zm-4.53 4.6c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.7 2.72 4.2 3.7 2.08.82 2.5.66 2.95.62.45-.04 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.45-.72-1.67-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.35-.76-1.84-.2-.48-.4-.42-.55-.42h-.36z"/></svg>
-        <span>Chat on WhatsApp</span>
-      </a>
+    <div class="contact-card reveal">
+      <div class="contact-inner">
+        <p class="section-eyebrow">Get in touch</p>
+        <h2>Have a wall in <em>mind?</em></h2>
+        <p class="contact-sub">Tell us the space, the size, the mood — we'll help you shape a piece for it.</p>
+        <a href="#" class="whatsapp-btn" id="whatsappBtn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 4.99L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.26-8.23zm-4.53 4.6c-.16 0-.42.06-.64.3-.22.24-.85.83-.85 2.02s.87 2.35.99 2.51c.12.16 1.7 2.72 4.2 3.7 2.08.82 2.5.66 2.95.62.45-.04 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.45-.72-1.67-.8-.22-.08-.39-.12-.55.12-.16.24-.63.8-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.35-.76-1.84-.2-.48-.4-.42-.55-.42h-.36z"/></svg>
+          <span>Chat on WhatsApp</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -137,8 +234,23 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#top" class="wordmark">Luxe<span>Gallery</span></a>
+      <p>Handcrafted sculptural wall art, made to order.</p>
+      <div class="social-links" id="footerSocialLinks"></div>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <p class="footer-title">Explore</p>
+      <a href="#work">Collection</a>
+      <a href="#about">Studio</a>
+      <a href="#process">Process</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
     <p>&copy; <span id="year"></span> Luxe Gallery. All pieces handcrafted to order.</p>
-    <div class="social-links" id="footerSocialLinks"></div>
+    <a href="#top" class="to-top">Back to top ↑</a>
   </div>
 </footer>
 
@@ -149,6 +261,10 @@
     <button class="product-modal-close" id="productModalClose" aria-label="Close">&times;</button>
     <div class="product-modal-image">
       <img id="modalImage" src="" alt="">
+      <div class="modal-nav">
+        <button type="button" id="modalPrev" aria-label="Previous piece">&larr;</button>
+        <button type="button" id="modalNext" aria-label="Next piece">&rarr;</button>
+      </div>
     </div>
     <div class="product-modal-info">
       <p class="product-modal-category" id="modalCategory"></p>

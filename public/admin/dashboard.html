@@ -12,17 +12,27 @@
 <div class="admin-shell">
 
   <div class="admin-topbar">
-    <p class="wordmark">Luxe Gallery — Admin</p>
+    <p class="wordmark">Luxe<span>Gallery</span> · Admin</p>
     <div class="admin-topbar-actions">
       <a href="/" target="_blank">View site</a>
       <button id="logoutBtn">Log out</button>
     </div>
   </div>
 
+  <div class="admin-layout">
+  <nav class="admin-nav" id="adminNav" aria-label="Sections">
+    <a href="#sec-images">Site images</a>
+    <a href="#sec-gallery">Gallery pieces</a>
+    <a href="#sec-pending">Pending reviews</a>
+    <a href="#sec-reviews">Reviews</a>
+    <a href="#sec-announce">Announcement</a>
+    <a href="#sec-contact">Contact &amp; social</a>
+    <a href="#sec-password">Password</a>
+  </nav>
   <div class="admin-content">
 
     <!-- SITE IMAGES -->
-    <section class="admin-section">
+    <section class="admin-section" id="sec-images">
       <h2>Site images</h2>
       <div class="admin-card">
         <form id="siteImagesForm" class="item-form" enctype="multipart/form-data">
@@ -44,7 +54,7 @@
     </section>
 
     <!-- GALLERY MANAGEMENT -->
-    <section class="admin-section">
+    <section class="admin-section" id="sec-gallery">
       <h2>Gallery pieces</h2>
       <div class="admin-card">
         <form id="galleryForm" class="item-form" enctype="multipart/form-data">
@@ -74,7 +84,7 @@
     </section>
 
     <!-- REVIEWS MANAGEMENT -->
-    <section class="admin-section">
+    <section class="admin-section" id="sec-pending">
       <h2>Pending reviews</h2>
       <div class="admin-card">
         <p class="empty-note" id="pendingReviewsEmpty" style="display:none;">No pending reviews right now.</p>
@@ -82,7 +92,7 @@
       </div>
     </section>
 
-    <section class="admin-section">
+    <section class="admin-section" id="sec-reviews">
       <h2>Reviews</h2>
       <div class="admin-card">
         <form id="testimonialForm" class="item-form">
@@ -109,7 +119,7 @@
     </section>
 
     <!-- SETTINGS -->
-    <section class="admin-section">
+    <section class="admin-section" id="sec-announce">
       <h2>Announcement bar</h2>
       <div class="admin-card">
         <form id="announcementForm" class="item-form">
@@ -125,7 +135,7 @@
       </div>
     </section>
 
-    <section class="admin-section">
+    <section class="admin-section" id="sec-contact">
       <h2>Contact &amp; social links</h2>
       <div class="admin-card">
         <form id="settingsForm" class="item-form">
@@ -144,7 +154,7 @@
     </section>
 
     <!-- CHANGE PASSWORD -->
-    <section class="admin-section">
+    <section class="admin-section" id="sec-password">
       <h2>Change password</h2>
       <div class="admin-card">
         <form id="passwordForm" class="item-form">
@@ -160,10 +170,23 @@
     </section>
 
   </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="/admin/admin.js"></script>
+<script>
+  // highlight the side-nav link of the section in view
+  (function () {
+    const links = document.querySelectorAll('#adminNav a');
+    const map = {};
+    links.forEach(a => { map[a.getAttribute('href').slice(1)] = a; });
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a === map[e.target.id]));
+    }), { rootMargin: '-30% 0px -60% 0px' });
+    Object.keys(map).forEach(id => { const el = document.getElementById(id); if (el) io.observe(el); });
+  })();
+</script>
 </body>
 </html>
