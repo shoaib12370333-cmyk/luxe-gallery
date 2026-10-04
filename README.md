@@ -99,7 +99,9 @@ luxe-gallery/
 ├── public/           → the actual website files (HTML/CSS/JS)
 │   ├── index.html    → main site
 │   ├── admin/        → admin login + dashboard
-│   ├── css/, js/, img/
+│   ├── css/site.css  → styles for the public site (css/style.css is used by the admin pages)
+│   ├── js/site.js    → all public-site behaviour (loader, scroll effects, showcase, viewer, reviews)
+│   └── img/
 ├── server/
 │   ├── server.js     → Express server + all API routes
 │   └── db.js         → database setup
